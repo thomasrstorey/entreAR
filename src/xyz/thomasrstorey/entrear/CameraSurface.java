@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -17,7 +16,6 @@ public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback
 	
 	private Camera camera;
 	private static final String TAG = "CameraSurface";
-	@SuppressWarnings("deprecation")
 	public CameraSurface(Context context) {
 		super(context);
 		SurfaceHolder holder = getHolder();

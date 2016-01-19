@@ -75,7 +75,7 @@ extern "C" {
 	JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeDisplayParametersChanged(JNIEnv* env, jobject object, jint orientation, jint width, jint height, jint dpi));
 	JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeDrawFrame(JNIEnv* env, jobject obj));
 	JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeSetInternetState(JNIEnv* env, jobject obj, jint state));
-	JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeLoadModel(JNIEnv* env, jobject obj, jstring objPath, jstring mtlPath, jstring texPath));
+	JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeLoadModel(JNIEnv* env, jobject obj, jstring objPath, jint pathLen));
 };
 
 static void nativeVideoGetCparamCallback(const ARParam* cparam, void* userdata);
@@ -143,7 +143,7 @@ static float 						lightAmbient[4] = {0.1f, 0.1f, 0.1f, 1.0f};
 static float 						lightDiffuse[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 static float 						lightPosition[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 
-static char* 						modelFile;
+static char* 						modelpath;
 
 // functions ==================================================================
 
@@ -568,12 +568,13 @@ static bool initARView(void){
 		LOGE("Unable to set up argl\n");
 		return false;
 	}
-	// load obj
-	models[0].obj = glmReadOBJ2(modelFile, 0, 0); // context 0, don't read textures yet.
+//	 load obj
+	models[0].obj = glmReadOBJ2(modelpath, 0, 0); // context 0, don't read textures yet.
 	if (!models[0].obj) {
-		LOGE("Error loading model from file '%s'.", model0file);
+		LOGE("Error loading model from file '%s'.", modelpath);
 		exit(-1);
 	}
+
 	glmScale(models[0].obj, 0.035f);
 	glmCreateArrays(models[0].obj, GLM_SMOOTH | GLM_MATERIAL | GLM_TEXTURE);
 
@@ -590,7 +591,7 @@ void drawModel (int i, float size, float x, float y, float z) {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
 	glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
-	glmDrawArrays(models[i].obj, 0);
+	glmDrawArrays(models[0].obj, 0);
 	glPopMatrix();
 }
 
@@ -625,7 +626,8 @@ JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeDrawFrame(JNIEnv* env, jobject o
 	for (int i = 0; i < markersNFTCount; i++) {
 		if (markersNFT[i].valid) {
 			glLoadMatrixf(markersNFT[i].pose.T);
-			drawModel(markersNFT[i].id, 1.0f, 0.0f, 0.0f, 20.0f);
+			drawModel(markersNFT[i].id, 1.0f, 50.0f, 50.0f, 1.0f);
+			//drawCube(40.0f, 0.0f, 0.0f, 20.0f);
 		}
 	}
 
@@ -646,8 +648,10 @@ JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeDrawFrame(JNIEnv* env, jobject o
 /*
  * nativeLoadModel
  */
-JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeLoadModel(JNIEnv* env, jobject obj, jstring objPath, jstring mtlPath, jstring texPath)){
-	modelFile = env->getStringUTFChars(objPath, 0);
+JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeLoadModel(JNIEnv* env, jobject obj, jstring objPath, jint pathLen)){
+	const char* path = env->GetStringUTFChars(objPath , NULL ) ;
+	modelpath = (char *)malloc(pathLen);
+	strcpy(modelpath, path);
 	gARViewInited = false;
 }
 

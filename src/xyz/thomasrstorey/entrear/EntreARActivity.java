@@ -19,14 +19,17 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout.LayoutParams;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -54,15 +57,17 @@ public class EntreARActivity extends Activity {
 	public static native void nativeDisplayParametersChanged(int orientation, int w, int h, int dpi);
 	public static native void nativeSetInternetState(int state);
 	
-	public static native void nativeLoadModel(String objpath, String mtlpath, String texpath);
+	public static native void nativeLoadModel(String objpath, int pathlength);
 	
 	public static int DISH_NOT_LOADED = 0;
 	public static int DISH_LOADING = 1;
 	public static int DISH_LOADED = 2;
 	
-	public static String ORDER_DISH_URL = "http://quickandeasyrecipes.xyz/api/order/";
+	public static String ORDER_DISH_URL = "http://quick-and-easy.recipes/api/order/";
 	
-	private GLSurfaceView glView;
+	private static final String TAG = "entreAR";
+	
+	private EntreARGLSurfaceView glView;
 	private CameraSurface camSurface;
 	private FrameLayout mainLayout;
 	private int entreARState;
@@ -84,6 +89,9 @@ public class EntreARActivity extends Activity {
 		updateNativeDisplayParameters();
 		setContentView(R.layout.activity_entrear);
 		EntreARActivity.nativeCreate(this);
+		File[] tmpfiles = new File[3];
+		setDishFiles(tmpfiles);
+		updateModel();
 	}
 	
 	@Override
@@ -101,10 +109,11 @@ public class EntreARActivity extends Activity {
 		boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 		nativeSetInternetState(isConnected ? 1 : 0);
 		entreARState = DISH_NOT_LOADED;
-		setDishFiles(new File[3]);
+		File[] tmpfiles = new File[3];
+		setDishFiles(tmpfiles);
+		updateModel();
 		camSurface = new CameraSurface(this);
 		glView = new EntreARGLSurfaceView(this);
-		glView.setRenderer(new Renderer());
 		glView.setZOrderMediaOverlay(true);
 		mainLayout.addView(camSurface, new LayoutParams(128, 128));
 		mainLayout.addView(glView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
@@ -193,18 +202,30 @@ public class EntreARActivity extends Activity {
 	}
 	
 	public void updateModel(){
-		String objpath;
-		String mtlpath;
-		String texpath;
-		if(dishObj.exists() && dishMtl.exists() && dishTex.exists()){
+		String objpath = "Data/models/button.obj";
+		if((dishObj != null && dishObj.exists()) && (dishMtl != null && dishMtl.exists()) && (dishTex != null && dishTex.exists()) ){
+			Log.v(TAG, "MTL PATH: " + dishMtl.getPath());
+			Log.v(TAG, "TEX PATH: " + dishTex.getPath());
 			objpath = dishObj.getPath();
-			mtlpath = dishMtl.getPath();
-			texpath = dishTex.getPath();
-		} else {
-			objpath = "Data/models/button.obj";
-			mtlpath = "Data/models/button.mtl";
-			texpath = "Data/models/button/button.jpg";
 		}
-		nativeLoadModel(objpath, mtlpath, texpath);
+		Log.v(TAG, objpath);
+		nativeLoadModel(objpath, objpath.length());
+	}
+	
+	public void captureScreenshot(View view) {
+	   glView.captureScreenshot();
+	}
+	
+	public void onScreenshot(File file){
+		createInstagramIntent("image/*", file);
+	}
+	
+	private void createInstagramIntent(String type, File media){
+	    Intent share = new Intent(Intent.ACTION_SEND);
+	    share.setType(type);
+	    Log.v(TAG, media.getAbsolutePath());
+	    Uri uri = Uri.fromFile(media);
+	    share.putExtra(Intent.EXTRA_STREAM, uri);
+	    startActivity(Intent.createChooser(share, "Share to"));
 	}
 }

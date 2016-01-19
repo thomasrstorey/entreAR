@@ -10,12 +10,13 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class GetDishTask extends AsyncTask<String, Void, File[]> {
+	
+	private static final String TAG = "entreAR";
 	
 	public interface GetDishResponse {
 		public void processFinish(File[] output);
@@ -44,7 +45,7 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 			try {
 				File file;
 				String[] urlParts = urls[i].split("/");
-				String[] filename = urlParts[urlParts.length-1].split(".");
+				String[] filename = urlParts[urlParts.length-1].split("\\.");
 				URL url = new URL(urls[i]);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
@@ -52,7 +53,7 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 				if (status == 200) {
 		            InputStream in = new BufferedInputStream(conn.getInputStream());
 		            try {
-		            	file = File.createTempFile(filename[0], "."+filename[1], context.getCacheDir());
+		            	file = new File(context.getCacheDir(), filename[0]+"."+filename[1]);
 		            	OutputStream out = null;
 		            	try {
 		            		out = new BufferedOutputStream(new FileOutputStream(file));
@@ -63,6 +64,7 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 			            	    len = in.read(buffer);
 			            	}
 		            	} finally {
+		            	  Log.v(TAG, "downloaded: " + filename[0] + "." + filename[1]);
 		            	  in.close();
 		            	  out.close();
 		            	  conn.disconnect();
@@ -76,11 +78,12 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 				e.printStackTrace();
 			} 	
 		}
+		Log.v(TAG, "GET DISH TASK RETURN: " + files[0].getPath());
 		return files;
 	}
 	
 	@Override
 	protected void onPostExecute (File[] files) {
-		
+		delegate.processFinish(files);
 	}
 }

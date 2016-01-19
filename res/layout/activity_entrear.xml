@@ -1,18 +1,27 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout"
+    android:id="@+id/RelativeLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="horizontal"
-    >
-    
+    android:orientation="horizontal" >
+
     <FrameLayout
         android:id="@+id/entreARLayout"
-        android:orientation="vertical"
         android:layout_width="1440px"
         android:layout_height="1080px"
-        >
-        
+        android:layout_above="@+id/imageButton1"
+        android:orientation="vertical" >
+
     </FrameLayout>
 
-</LinearLayout>
+    <ImageButton
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp"
+        android:onClick="captureScreenshot"
+        android:src="@drawable/capture_ss" />
+
+</RelativeLayout>
