@@ -3,5 +3,9 @@
 
     <string name="app_name">EntréAR</string>
     <string name="hello_world">Hello world!</string>
+    <string name="decide_answer">Answer Here</string>
+    <string name="decide_message">How Do You Decide?</string>
+    <string name="ok">OK</string>
+    
 
 </resources>

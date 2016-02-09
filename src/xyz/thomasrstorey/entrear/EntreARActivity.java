@@ -1,6 +1,6 @@
 /*
  * Thomas R Storey
- * 2015
+ * 2015-2016
  * EntreAR
  */
 
@@ -12,7 +12,7 @@ import org.artoolkit.ar.base.camera.CameraPreferencesActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -20,8 +20,8 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout.LayoutParams;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -34,7 +34,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-public class EntreARActivity extends Activity {
+public class EntreARActivity extends FragmentActivity {
 	
 	static {
 		System.loadLibrary("c++_shared");

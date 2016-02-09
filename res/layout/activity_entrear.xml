@@ -7,20 +7,30 @@
 
     <FrameLayout
         android:id="@+id/entreARLayout"
-        android:layout_width="1440px"
-        android:layout_height="1080px"
-        android:layout_above="@+id/imageButton1"
+        android:layout_width="1480px"
+        android:layout_height="1110px"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical" >
 
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/recipe_progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone" />
+
     <ImageButton
+        android:id="@+id/imageButton1"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="70dp"
         android:onClick="captureScreenshot"
         android:src="@drawable/capture_ss" />
 

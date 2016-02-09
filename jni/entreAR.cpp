@@ -626,7 +626,7 @@ JNIEXPORT void JNICALL JNIFUNCTION_NATIVE(nativeDrawFrame(JNIEnv* env, jobject o
 	for (int i = 0; i < markersNFTCount; i++) {
 		if (markersNFT[i].valid) {
 			glLoadMatrixf(markersNFT[i].pose.T);
-			drawModel(markersNFT[i].id, 1.0f, 50.0f, 50.0f, 1.0f);
+			drawModel(markersNFT[i].id, 1.0f, 100.0f, 100.0f, 1.0f);
 			//drawCube(40.0f, 0.0f, 0.0f, 20.0f);
 		}
 	}
