@@ -1,6 +1,5 @@
 package xyz.thomasrstorey.entrear;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,7 +17,7 @@ public class DecideDialogFragment extends DialogFragment {
 	DecideDialogListener listener;
 	
 	public interface DecideDialogListener {
-		public void onDialogPositiveClick(DialogFragment dialog);
+		public void onDialogPositiveClick(DialogFragment dialog, String msg);
 	}
 	
 	
@@ -31,7 +30,7 @@ public class DecideDialogFragment extends DialogFragment {
 			   .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 				   @Override
 					public void onClick(DialogInterface dialog, int which) {
-						listener.onDialogPositiveClick(DecideDialogFragment.this);
+						listener.onDialogPositiveClick(DecideDialogFragment.this, editText.getText().toString());
 					}
 			   });
 		Dialog dialog = builder.create();

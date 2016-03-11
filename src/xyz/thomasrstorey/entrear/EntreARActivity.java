@@ -63,7 +63,8 @@ public class EntreARActivity extends FragmentActivity {
 	public static int DISH_LOADING = 1;
 	public static int DISH_LOADED = 2;
 	
-	public static String ORDER_DISH_URL = "http://quick-and-easy.recipes/api/order/";
+	public static String ORDER_DISH_URL = "quick-and-easy.recipes";
+	public static String ORDER_DISH_PATH = "/api/order/";
 	
 	private static final String TAG = "entreAR";
 	
@@ -78,6 +79,7 @@ public class EntreARActivity extends FragmentActivity {
 	private File dishObj;
 	private File dishMtl;
 	private File dishTex;
+	public String decideText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -185,6 +187,10 @@ public class EntreARActivity extends FragmentActivity {
 		}catch (JSONException e){
 			e.printStackTrace();
 		}
+	}
+	
+	public void setDecideText(String msg){
+		decideText = msg;
 	}
 	
 	public String[] getDishURLs(){

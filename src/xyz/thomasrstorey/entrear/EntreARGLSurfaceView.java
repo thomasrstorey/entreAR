@@ -1,6 +1,8 @@
 package xyz.thomasrstorey.entrear;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
@@ -42,9 +44,10 @@ public class EntreARGLSurfaceView extends GLSurfaceView implements DecideDialogF
 	}
 	
 	@Override
-	public void onDialogPositiveClick(DialogFragment dialog){
+	public void onDialogPositiveClick(DialogFragment dialog, String msg){
 		progressBar.setVisibility(View.VISIBLE);
 		progressBar.setIndeterminate(true);
+		context.setDecideText(msg);
 		getDish();
 	}
 	
@@ -65,12 +68,18 @@ public class EntreARGLSurfaceView extends GLSurfaceView implements DecideDialogF
 							context.updateModel();
 						}
 					});
-					//TODO: Add decide_answer string to request data
 					String[] urls = context.getDishURLs();
 					getTask.execute(urls[0], urls[1], urls[2]);
 				}
 			});
-			orderTask.execute(EntreARActivity.ORDER_DISH_URL);
+			try {
+				String encoded = URLEncoder.encode(context.decideText, "UTF-8");
+				orderTask.execute("http://"+EntreARActivity.ORDER_DISH_URL
+								 +EntreARActivity.ORDER_DISH_PATH+"?d="+encoded);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			
 		} else if(context.getEntreARState() == EntreARActivity.DISH_LOADED){
 			context.setEntreARState(EntreARActivity.DISH_NOT_LOADED);
 		}
@@ -80,6 +89,9 @@ public class EntreARGLSurfaceView extends GLSurfaceView implements DecideDialogF
 	public boolean onTouchEvent (MotionEvent event) {
 		if(event.getAction() == MotionEvent.ACTION_UP){
 			Log.v(TAG, "TOUCH EVENT");
+			if(context.getEntreARState() == EntreARActivity.DISH_LOADED){
+				context.setEntreARState(EntreARActivity.DISH_NOT_LOADED);
+			}
 			showDecideDialog();
 		}
 		return true;

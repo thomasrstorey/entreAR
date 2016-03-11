@@ -46,16 +46,30 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 				File file;
 				String[] urlParts = urls[i].split("/");
 				String[] filename = urlParts[urlParts.length-1].split("\\.");
+				boolean delay = false;
+				int retry = 0;
+				int status = 0;
+				do{
+					if(delay){
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+					}
 				URL url = new URL(urls[i]);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 				conn.setRequestMethod("GET");
-				int status = conn.getResponseCode();
+				status = conn.getResponseCode();
+				Log.v(TAG, "STATUS CODE: " + status);
 				if (status == 200) {
+					Log.v(TAG, "DO THE THING");
 		            InputStream in = new BufferedInputStream(conn.getInputStream());
 		            try {
 		            	file = new File(context.getCacheDir(), filename[0]+"."+filename[1]);
 		            	OutputStream out = null;
 		            	try {
+		            		Log.v(TAG, "TRY");
 		            		out = new BufferedOutputStream(new FileOutputStream(file));
 		            		byte[] buffer = new byte[1024];
 			            	int len = in.read(buffer);
@@ -64,6 +78,7 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 			            	    len = in.read(buffer);
 			            	}
 		            	} finally {
+		            		Log.v(TAG, "FINALLY");
 		            	  Log.v(TAG, "downloaded: " + filename[0] + "." + filename[1]);
 		            	  in.close();
 		            	  out.close();
@@ -73,12 +88,17 @@ public class GetDishTask extends AsyncTask<String, Void, File[]> {
 		            } catch (IOException e){
 		            	e.printStackTrace();
 		            }
+		        } else {
+		        	conn.disconnect();
+		        	retry++;
+		        	delay = true;
 		        }
+				}while(retry < 20 && status != 200);
 			} catch (IOException e){
 				e.printStackTrace();
 			} 	
 		}
-		Log.v(TAG, "GET DISH TASK RETURN: " + files[0].getPath());
+		//Log.v(TAG, "GET DISH TASK RETURN: " + files[0].getPath());
 		return files;
 	}
 	
